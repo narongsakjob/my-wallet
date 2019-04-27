@@ -1,21 +1,33 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native'
+import {createStackNavigator, createAppContainer} from 'react-navigation'
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
-  }
+import Firebase, { FirebaseContext } from './components/Firebase/'
+import { withAuthentication } from './components/Session/'
+import LoginScreen from './screens/LoginScreen'
+import HomeScreen from './screens/HomeScreen'
+
+const Home = ({ ...props }) => {
+  const { authUser } = props
+  return (
+    authUser === false ?
+      <Text>Loading</Text> :
+      authUser === null ?
+        <LoginScreen /> :
+        <HomeScreen />
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const Component = withAuthentication(Home)
+
+const App = ({ ...props }) => {
+  return (
+    <FirebaseContext.Provider value={new Firebase()}>
+      <SafeAreaView>
+        <Component />
+      </SafeAreaView>
+    </FirebaseContext.Provider>
+  )
+}
+
+export default App
