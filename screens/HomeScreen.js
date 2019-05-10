@@ -1,9 +1,18 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Button } from 'react-native'
 
-const HomeScreen = () => (
+const HomeScreen = ({ firebase, navigation, ...props }) => (
   <View>
-    <Text>HomeScreen</Text>
+    <Text style={{ textAlign: 'center' }}>My wallet</Text>
+    <Text style={{ textAlign: 'center' }}>Total : {}</Text>
+    <Button 
+      title='Add wallet'
+      onPress={() => navigation.navigate('CreateWallet')}
+    />
+    <Button
+      title='Log out'
+      onPress={() => firebase.doSignOut()}
+    />
   </View>
 )
 
