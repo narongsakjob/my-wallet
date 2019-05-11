@@ -1,6 +1,7 @@
 import React from 'react';
 import { SafeAreaView, Text, View } from 'react-native'
-import {createStackNavigator, createAppContainer, createSwitchNavigator} from 'react-navigation'
+import { createAppContainer, createSwitchNavigator} from 'react-navigation'
+
 
 import Firebase, { FirebaseContext } from './components/Firebase/'
 import { withAuthentication } from './components/Session/'
