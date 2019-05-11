@@ -13,7 +13,6 @@ class Firebase {
     this.database = app.database().ref()
 
     this.googleProvider = new app.auth.GoogleAuthProvider()
-    this.facebookProvider = new app.auth.FacebookAuthProvider()
   }
 
   doCreateUserWithEmailAndPassword = (email, password, rePassword) =>{
@@ -65,8 +64,6 @@ class Firebase {
         })
       })
   }
-
-  doSignInWithFacebook = () => this.auth.signInWithPopup(this.facebookProvider)
 
   doSignOut = () => this.auth.signOut()
 

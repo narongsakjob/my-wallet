@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, Button, StyleSheet } from 'react-native'
+import { View, Button, StyleSheet } from 'react-native'
 import { compose, withHandlers, withState } from 'recompose'
+import { Text } from 'react-native-elements'
 
 import SignIn from '../components/Authentication/SignIn'
 import SignUp from '../components/Authentication/SignUp'
@@ -19,15 +20,20 @@ const LoginScreen = ({
     {
       status === 'signin' ?
         <>
-          <Text>Sign In</Text>
+          <Text h2 style={{ marginBottom: 15, color: '#EA8B38' }}>My wallet</Text>
+          <Text h3 style={{ marginBottom: 10 }}>Sign In</Text>
           <SignIn {...props} />
-          <Button title='Sign Up' onPress={() => setStatus('signup')} />
+          <View style={{ alignSelf: 'flex-end' }}>
+            <Button title='Create Account' onPress={() => setStatus('signup')} color='#000' />
+          </View>
         </>
         :
         <>
-          <Text>Sign Up</Text>
+          <Text h3 style={{ marginBottom: 10 }}>Sign Up</Text>
           <SignUp {...props} />
-          <Button title='Back' onPress={() => setStatus('signin')} />
+          <View style={{ alignSelf: 'flex-end' }}>
+            <Button title='Sign in' onPress={() => setStatus('signin')} color='#000' />
+          </View>
         </>
     }
   </View>
@@ -35,9 +41,10 @@ const LoginScreen = ({
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#fff',
+    height: '100%'
   },
 });
 

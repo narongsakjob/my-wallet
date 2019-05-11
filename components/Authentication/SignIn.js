@@ -1,6 +1,8 @@
 import React from 'react'
-import { Button, TextInput, StyleSheet } from 'react-native'
-import { withState, compose, withHandlers } from 'recompose'
+import { StyleSheet } from 'react-native'
+import { Input, Button } from 'react-native-elements'
+import { withState, compose } from 'recompose'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const enhance = compose(
   withState('email', 'setEmail', ''),
@@ -9,43 +11,63 @@ const enhance = compose(
 
 const SignIn = ({ email, password, setEmail, setPassword, firebase }) => (
   <>
-    <TextInput
+    <Input
       value={email}
       placeholder={'Email'}
       onChangeText={(email) => setEmail(email)}
-      style={styles.input}
+      containerStyle={styles.marginBottom}
+      leftIcon={
+        <Icon
+          name='user'
+          size={24}
+          color='black'
+          style={{ paddingRight: 8 }}
+        />
+      }
     />
-    <TextInput
+    <Input
       value={password}
       placeholder={'Password'}
       onChangeText={(password) => setPassword(password)}
       secureTextEntry={true}
-      style={styles.input}
+      containerStyle={styles.marginBottom}
+      leftIcon={
+        <Icon
+          name='lock'
+          size={24}
+          color='black'
+          style={{ paddingRight: 8 }}
+        />
+      }
     />
     <Button
       title='Login'
       onPress={() => firebase.doSignInWithEmailAndPassword(email, password)}
+      buttonStyle={{ backgroundColor: '#EA8B38' }}
+      containerStyle={styles.marginBottom}
     />
     <Button
-    title='Login with google'
-    onPress={() => firebase.doSignInWithGoogle()}
-    />
-    <Button
-      title='Login with facebook'
-      onPress={() => firebase.doSignInWithFacebook()}
+      title='Login with'
+      icon={
+        <Icon
+        name='google'
+        size={24}
+        color='#fff'
+        style={{ paddingLeft: 8 }}
+        />
+      }
+      iconRight
+      buttonStyle={{ backgroundColor: '#DB4437' }}
+      containerStyle={styles.marginBottom}
+      onPress={() => firebase.doSignInWithGoogle()}
     />
   </>
 )
 
 const styles = StyleSheet.create({
-  input: {
-    width: 200,
-    height: 44,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    marginBottom: 10,
+  marginBottom: {
+    marginBottom: 25,
   },
-});
+})
 
 export default enhance(SignIn)

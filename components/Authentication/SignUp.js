@@ -1,6 +1,8 @@
 import React from 'react'
-import { Button, TextInput, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { withState, compose } from 'recompose'
+import { Input, Button } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const enhance = compose(
   withState('email', 'setEmail', ''),
@@ -12,42 +14,63 @@ const SignUp = ({
   email, password, rePassword, setEmail, setPassword, setRePassword, firebase
 }) => (
   <>
-    <TextInput
+    <Input
       value={email}
       placeholder={'Email'}
       onChangeText={(val) => setEmail(val)}
-      style={styles.input}
+      containerStyle={styles.marginBottom}
+      leftIcon={
+        <Icon
+          name='user'
+          size={24}
+          color='black'
+          style={{ paddingRight: 8 }}
+        />
+      }
     />
-    <TextInput
+    <Input
       value={password}
       placeholder={'Password'}
       onChangeText={(val) => setPassword(val)}
       secureTextEntry={true}
-      style={styles.input}
+      containerStyle={styles.marginBottom}
+      leftIcon={
+        <Icon
+          name='lock'
+          size={24}
+          color='black'
+          style={{ paddingRight: 8 }}
+        />
+      }
     />
-     <TextInput
+     <Input
       value={rePassword}
       placeholder={'Re-Password'}
       onChangeText={(val) => setRePassword(val)}
       secureTextEntry={true}
-      style={styles.input}
+      containerStyle={styles.marginBottom}
+      leftIcon={
+        <Icon
+          name='unlock-alt'
+          size={24}
+          color='black'
+          style={{ paddingRight: 8 }}
+        />
+      }
     />
     <Button
       title='Register'
+      buttonStyle={{ backgroundColor: '#EA8B38' }}
+      containerStyle={styles.marginBottom}
       onPress={() => firebase.doCreateUserWithEmailAndPassword(email, password, rePassword)}
     />
   </>
 )
 
 const styles = StyleSheet.create({
-  input: {
-    width: 200,
-    height: 44,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    marginBottom: 10,
+  marginBottom: {
+    marginBottom: 25,
   },
-});
+})
 
 export default enhance(SignUp)
