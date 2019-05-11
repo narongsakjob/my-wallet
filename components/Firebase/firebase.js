@@ -55,6 +55,14 @@ class Firebase {
     })
   }
 
+  editWallet = (name, key) => {
+    if (this.auth.currentUser === undefined) return;
+    return this.database.child(this.auth.currentUser.uid).child('wallet')
+      .child(key)
+      .child('name')
+      .set(name)
+  }
+
   createTask = ({ desc, type, key, value }) => {
     if (this.auth.currentUser === undefined) return;
     const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -82,13 +90,38 @@ class Firebase {
       databaseRef.child('total').set(totalRef + realValue)
       walletRef.child('total').set(totalWallet + realValue)
       taskRef.child('task')
-        .child(currentDate.getDay())
+        .child(currentDate.getDate())
         .push()
         .set({
           type: type,
           price: value,
           desc: desc
         })
+    })
+  }
+
+  deleteTask = ({ key, taskId, keyTask, day }) => {
+    if (this.auth.currentUser === undefined) return;
+    
+    const databaseRef = this.database.child(this.auth.currentUser.uid)
+    const walletRef = databaseRef.child('wallet').child(key)
+    const taskRef = walletRef.child('schedule').child(taskId)
+    const idRef = taskRef.child('task').child(day).child(keyTask)
+
+
+    databaseRef.once('value', snapshot => {
+      const totalRef = parseFloat(snapshot.val()['total'])
+      const totalWallet = parseFloat(snapshot.val()['wallet'][key]['total'])
+      const totalTask = parseFloat(snapshot.val()['wallet'][key]['schedule'][taskId]['total'])
+      const removeRef = snapshot.val()['wallet'][key]['schedule'][taskId]['task'][day][keyTask]
+
+      let removeValue = parseFloat(removeRef.price)
+      removeValue = removeRef.type === 'income' ? -1*removeValue : removeValue
+    
+      databaseRef.child('total').set(totalRef + removeValue)
+      walletRef.child('total').set(totalWallet + removeValue)
+      taskRef.child('total').set(totalTask + removeValue)
+      idRef.set(null)
     })
   }
 }

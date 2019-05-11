@@ -13,6 +13,7 @@ const withAuthentication = Component => {
         listWallet: [],
         totalWallet: 0,
         walletName: '',
+        limitWalletName: '0',
         walletAmount: 0,
       }
     }
@@ -68,7 +69,15 @@ const withAuthentication = Component => {
     getItem = value => {
       this.setState({
         walletName: value.name,
-        walletAmount: value.total
+        walletAmount: value.total,
+        limitWalletName: `${value.name.length}`
+      })
+    }
+
+    setWalletName = value => {
+      this.setState({
+        walletName: value,
+        limitWalletName: `${value.length}`
       })
     }
 
@@ -76,7 +85,7 @@ const withAuthentication = Component => {
       const authUser = this.state
       return (
         <AuthUserContext.Provider value={authUser}>
-          <Component {...this.state} {...this.props} />
+          <Component {...this.state} {...this.props} setWalletName={this.setWalletName} />
         </AuthUserContext.Provider>
       )
     }

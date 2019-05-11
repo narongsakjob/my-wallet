@@ -1,17 +1,26 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import { Input } from 'react-native-elements'
-import { compose, withState } from 'recompose'
+import { compose, withState, lifecycle } from 'recompose'
 import Icon from 'react-native-vector-icons/Feather'
 
-import { withFirebase } from '../components/Firebase'
+import { withAuthentication } from '../components/Session'
 
+const CreateWallet = ({ firebase, walletName, setWalletName, navigation, limitWalletName }) => {
+  const key = navigation.getParam('key', 'NO-KEY')
 
-const CreateWallet = ({ firebase, name, setName, navigation, limit, setLimit }) => {
   const createWallet = async () => {
-    if (name !== '') {
-      await firebase.createWallet(name)
-      navigation.navigate('Main')
+    if (walletName !== '') {
+      if (key !== 'NO-KEY') {
+        await firebase.editWallet(walletName, key)
+
+        navigation.navigate('Wallet', {
+          key: key
+        })
+      } else {
+        await firebase.createWallet(walletName)
+        navigation.navigate('Main')
+      }
     } else {
       alert('Name is empty!')
     }
@@ -20,7 +29,15 @@ const CreateWallet = ({ firebase, name, setName, navigation, limit, setLimit }) 
   return (
     <View>
       <View style={styles.banner}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Main')}>
+        <TouchableWithoutFeedback onPress={() => {
+          if (key !== 'NO-KEY') {
+            navigation.navigate('Wallet', {
+              key: key
+            })
+          } else {
+            navigation.navigate('Main')
+          }
+        }}>
           <Icon
             name='arrow-left'
             size={26}
@@ -37,12 +54,11 @@ const CreateWallet = ({ firebase, name, setName, navigation, limit, setLimit }) 
         </TouchableWithoutFeedback>
       </View>
       <Input
-        value={name}
+        value={walletName}
         placeholder='Wallet name'
         onChangeText={(val) => {
-          if (val.length <= 25) {
-            setName(val)
-            setLimit(`${val.length}`)
+          if (val.length <= 15) {
+            setWalletName(val)
           }
         }}
         containerStyle={styles.textInputContainer}
@@ -56,7 +72,7 @@ const CreateWallet = ({ firebase, name, setName, navigation, limit, setLimit }) 
           />
         }
       />
-      <Text style={styles.limitLabel}>{limit}/25</Text>
+      <Text style={styles.limitLabel}>{limitWalletName}/15</Text>
     </View>
   )
 }
@@ -88,7 +104,6 @@ const styles = StyleSheet.create({
 })
 
 export default compose(
-  withState('name', 'setName', ''),
   withState('limit', 'setLimit', '0'),
-  withFirebase,
+  withAuthentication,
 )(CreateWallet)

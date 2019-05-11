@@ -1,47 +1,150 @@
 import React from 'react'
-import { View, Text, Button, FlatList } from 'react-native'
+import { View, FlatList, TouchableWithoutFeedback, StyleSheet } from 'react-native'
 import { compose, withState, lifecycle } from 'recompose'
+import { Text } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/Feather'
 
 import { withAuthentication } from '../components/Session'
-
+import { TaskCard } from '../components/Card'
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
 ]
 const currentDate = new Date();
 
-const Wallet = ({ currentMonth, currentYear, navigation, walletName, walletAmount, listTask }) => {
+const Wallet = ({
+  currentDate, currentMonth, currentYear, navigation, walletName, walletAmount, listTask, monthBalance
+}) => {
   const key = navigation.getParam('key', 'NO-KEY')
 
   return (
-    <View>
-      <Text>{`${currentMonth} ${currentYear}`}</Text>
-      <Text>{walletName}</Text>
-      <Text>{walletAmount}</Text>
-      {
-        listTask.map((val, index) => (
-          <View key={`${val.day}${currentMonth}${currentYear}-${index}`}>
-            <Text>{`${val.day} ${currentMonth} ${currentYear}`}</Text>
-            <FlatList
-              data={val.tasks}
-              renderItem={({item}) => <Text>{item.desc} {item.price}</Text>}
-            />
-          </View>
-        ))
-      }
-      <Button title='+' onPress={() => navigation.navigate('CreateTask', {
+    <View style={{ height: '100%' }}>
+      <View style={styles.banner}>
+        <TouchableWithoutFeedback onPress={() => navigation.navigate('Main')}>
+          <Icon
+            name='arrow-left'
+            size={26}
+            color='#fff'
+          />
+        </TouchableWithoutFeedback>
+        <Text style={styles.title}>{walletName}</Text>
+        <TouchableWithoutFeedback onPress={() => navigation.navigate('CreateWallet', {
+          key: key
+        })}>
+          <Icon
+            name='edit-2'
+            size={26}
+            color='#fff'
+          />
+        </TouchableWithoutFeedback>
+      </View>
+      <View style={styles.balance}>
+        <Text h5 style={styles.textBalance}>Wallet Balance</Text>
+        <View style={styles.titleWrapper}>
+          <Text h4 style={styles.textBalance}>{walletAmount.toFixed(2)}</Text>
+        </View>
+        <Text h5 style={styles.textBalance}>Monthly balance : {monthBalance.toFixed(2)}</Text>
+      </View>
+      <View style={styles.bannerCalendar}>
+        <Icon
+          name='calendar'
+          size={26}
+          color='#000'
+        />
+        <Text>{`${currentMonth} ${currentYear}`}</Text>
+        <Icon
+          name='chevron-left'
+          size={26}
+          color='#000'
+        />
+        <Icon
+          name='chevron-right'
+          size={26}
+          color='#000'
+        />
+      </View>
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('CreateTask', {
         key: key,
-      })}  />
-      <Button title='Back' onPress={() => navigation.navigate('Main')}  />
+      })}>
+        <View style={styles.addContainer} >
+          <Icon
+            name='plus'
+            size={18}
+            color='#CE8116'
+            style={{ marginRight: 20 }}
+          />
+          <Text style={{ color: '#CE8116'}}>Add Event</Text>
+        </View>
+      </TouchableWithoutFeedback>
+        <View style={styles.bannerDate}>
+          <Text style={styles.labelDate}>{`${currentDate} ${currentMonth} ${currentYear}`}</Text>
+        </View>
+        <FlatList
+          data={listTask}
+          renderItem={({item}) => <TaskCard keyId={key} item={item}/>}
+        />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  banner: {
+    backgroundColor: '#EA8B38',
+    padding: 25,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  title: {
+    color: '#fff',
+    fontSize: 18
+  },
+  balance: {
+    backgroundColor: '#EA8B38',
+    padding: 25,
+    margin: 20, 
+  },
+  textBalance: {
+    color: '#fff',
+    textAlign: 'center'
+  },
+  titleWrapper: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
+    marginBottom: 10,
+  },
+  addContainer: {
+    backgroundColor: '#fff',
+    padding: 10,
+    display: 'flex',
+    flexDirection: "row",
+  },
+  bannerCalendar: {
+    padding: 10,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#C4C4C4',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  bannerDate: {
+    padding: 5,
+    backgroundColor: '#C4C4C4'
+  },
+  labelDate: {
+    textAlign: 'center',
+    color: '#4D4D4D'
+  }
+})
 
 export default compose(
   withState('listTask', 'setListTask', []),
   withState('currentMonth', 'setCurrentMonth', monthNames[currentDate.getMonth()]),
   withState('currentDate', 'setCurrentDate', currentDate.getDate()),
   withState('currentYear', 'setCurrentYear', currentDate.getFullYear()),
+  withState('monthBalance', 'setMonthBalance', 0),
   withAuthentication,
   lifecycle({
     componentDidMount() {
@@ -50,7 +153,9 @@ export default compose(
         navigation,
         currentMonth,
         currentYear,
-        setListTask
+        currentDate,
+        setListTask,
+        setMonthBalance
       } = this.props
       const key = navigation.getParam('key', 'NO-KEY')
 
@@ -59,20 +164,21 @@ export default compose(
       .child(key)
       .child('schedule')
       .child(`${currentMonth}${currentYear}`)
-      .child('task')
       .on('value', snapshot => {
-        const tasks = snapshot.val()
         let tempArr = []
-        if (tasks !== null) {
-          Object.keys(tasks).forEach((task, index) => {
-            tempArr.push({ day: task, tasks: [] })
-            Object.keys(tasks[task]).forEach(val => {
-              tempArr[index].tasks.push({
-                key: val,
-                desc: tasks[task][val].desc,
-                price:  tasks[task][val].price,
-                type:  tasks[task][val].type,
-              })
+        if (snapshot.hasChild('task')) {
+          const monthBalance = snapshot.val()['total']
+          const tasks = snapshot.val()['task'][currentDate]
+          if (tasks === undefined) return
+          setMonthBalance(monthBalance)
+          Object.keys(tasks).forEach(val => {
+            tempArr.push({
+              desc: tasks[val].desc,
+              price:  parseFloat(tasks[val].price),
+              type:  tasks[val].type,
+              keyTask: val,
+              taskId: `${currentMonth}${currentYear}`,
+              day: currentDate
             })
           })
         }

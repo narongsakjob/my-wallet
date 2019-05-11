@@ -32,7 +32,7 @@ const HomeScreen = ({ firebase, navigation, totalWallet, listWallet }) => {
                   style: 'cancel',
                 },
               ],
-            );
+            )
           }}>
             <Icon
                 name='log-out'
@@ -55,7 +55,7 @@ const HomeScreen = ({ firebase, navigation, totalWallet, listWallet }) => {
         <View style={styles.addContainer} >
           <Icon
             name='circle-with-plus'
-            size={18}
+            size={22}
             color='#CE8116'
             style={{ marginRight: 20 }}
           />
@@ -97,8 +97,9 @@ const styles = StyleSheet.create({
   },
   addContainer: {
     backgroundColor: '#fff',
-    padding: 10,
+    padding: 12,
     display: 'flex',
+    alignItems: 'center',
     flexDirection: "row",
     borderBottomWidth: 1,
     borderColor: '#CE8116'
