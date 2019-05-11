@@ -4,9 +4,13 @@ import {createStackNavigator, createAppContainer, createSwitchNavigator} from 'r
 
 import Firebase, { FirebaseContext } from './components/Firebase/'
 import { withAuthentication } from './components/Session/'
-import LoginScreen from './screens/LoginScreen'
-import HomeScreen from './screens/HomeScreen'
-import CreateWalletScreen from './screens/CreateWalletScreen'
+import {
+  HomeScreen,
+  CreateWalletScreen,
+  LoginScreen,
+  WalletScreen,
+  CreateTaskScreen
+} from './screens/'
 
 const Home = ({ ...props }) => {
   const { authUser } = props
@@ -21,11 +25,11 @@ const Home = ({ ...props }) => {
 
 const MainScreen = withAuthentication(Home)
 
-// MainScreen.navigationOptions = { header: null }
-
 const MainNavigator = createSwitchNavigator({
   Main: {screen: MainScreen},
   CreateWallet: {screen: CreateWalletScreen},
+  Wallet: {screen: WalletScreen},
+  CreateTask: {screen: CreateTaskScreen}
 });
 
 const AppContainer = createAppContainer(MainNavigator)

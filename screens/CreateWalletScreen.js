@@ -6,9 +6,10 @@ import { withFirebase } from '../components/Firebase'
 
 
 const CreateWallet = ({ firebase, name, setName, navigation, ...props }) => {
-  const createWallet = () => {
+  const createWallet = async () => {
     if (name !== '') {
-      firebase.createWallet(name)
+      await firebase.createWallet(name)
+      navigation.navigate('Main')
     } else {
       alert('Name is empty!')
     }

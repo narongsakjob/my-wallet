@@ -1,6 +1,6 @@
 import firebase from 'firebase'
 import app from 'firebase/app'
-import database from 'firebase/database'
+import 'firebase/database'
 import 'firebase/auth'
 import firebaseConfig from '../../config/firebase'
 
@@ -28,6 +28,16 @@ class Firebase {
 
   doSignInWithEmailAndPassword = (email, password) =>{
     this.auth.signInWithEmailAndPassword(email, password)
+    .then(authUser => {
+      this.database.child(authUser.uid)
+        .child('total')
+        .once('value', snapshot => {
+          if(!snapshot.exists()) {
+            this.database.child(authUser.uid)
+              .set({ total: 0 })
+          }
+        })
+    })
     .catch(error => {
       alert(error)
     })
@@ -44,6 +54,16 @@ class Firebase {
     const { idToken, accessToken } = result;
     const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
     this.auth.signInAndRetrieveDataWithCredential(credential)
+      .then(authUser => {
+        this.database.child(authUser.user.uid)
+        .child('total')
+        .once('value', snapshot => {
+          if(!snapshot.exists()) {
+            this.database.child(authUser.user.uid)
+              .set({ total: 0 })
+          }
+        })
+      })
   }
 
   doSignInWithFacebook = () => this.auth.signInWithPopup(this.facebookProvider)
@@ -52,10 +72,47 @@ class Firebase {
 
   createWallet = (name) => {
     if (this.auth.currentUser === undefined) return;
-    this.database.child(this.auth.currentUser.uid).push().set({
+    return this.database.child(this.auth.currentUser.uid).child('wallet').push().set({
       name: name,
       total: 0
-    }).then(() => alert('Success created'))
+    })
+  }
+
+  createTask = ({ desc, type, key, value }) => {
+    if (this.auth.currentUser === undefined) return;
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ]
+    const currentDate = new Date();
+    const taskId = `${monthNames[currentDate.getMonth()]}${currentDate.getFullYear()}`
+  
+    const databaseRef = this.database.child(this.auth.currentUser.uid)
+    const walletRef = databaseRef.child('wallet').child(key)
+    const taskRef = walletRef.child('schedule').child(taskId)
+
+    return databaseRef.once('value', snapshot => {
+      const totalRef = parseFloat(snapshot.val()['total'])
+      const totalWallet = parseFloat(snapshot.val()['wallet'][key]['total'])
+      const realValue = parseFloat(type === 'income' ? value : -1*value)
+
+      if (snapshot.val()['wallet'][key]['schedule'] === undefined) {
+        taskRef.child('total').set(realValue)
+      } else {
+        const totalTask = parseFloat(snapshot.val()['wallet'][key]['schedule'][taskId]['total'])
+        taskRef.child('total').set(totalTask + realValue)
+      }
+    
+      databaseRef.child('total').set(totalRef + realValue)
+      walletRef.child('total').set(totalWallet + realValue)
+      taskRef.child('task')
+        .child(currentDate.getDay())
+        .push()
+        .set({
+          type: type,
+          price: value,
+          desc: desc
+        })
+    })
   }
 }
 export default Firebase

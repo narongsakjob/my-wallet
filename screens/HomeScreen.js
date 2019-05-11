@@ -1,19 +1,32 @@
 import React from 'react'
-import { View, Text, Button } from 'react-native'
+import { withState, compose, lifecycle } from 'recompose'
+import { View, Text, Button, FlatList } from 'react-native'
 
-const HomeScreen = ({ firebase, navigation, ...props }) => (
-  <View>
-    <Text style={{ textAlign: 'center' }}>My wallet</Text>
-    <Text style={{ textAlign: 'center' }}>Total : {}</Text>
-    <Button 
-      title='Add wallet'
-      onPress={() => navigation.navigate('CreateWallet')}
-    />
-    <Button
-      title='Log out'
-      onPress={() => firebase.doSignOut()}
-    />
-  </View>
-)
+import { withAuthentication } from '../components/Session'
+import Card from '../components/Card'
 
-export default HomeScreen
+const HomeScreen = ({ firebase, navigation, totalWallet, listWallet }) => {
+  return (
+    <View>
+      <Text style={{ textAlign: 'center' }}>My wallet</Text>
+      <Text style={{ textAlign: 'center' }}>Total : {totalWallet}</Text>
+      <Button 
+        title='Add wallet'
+        onPress={() => navigation.navigate('CreateWallet')}
+      />
+      <FlatList
+        data={listWallet}
+        renderItem={({item}) => <Card navigation={navigation} item={item} />}
+      />
+      <Button
+        style={{ marginTop: '200px' }}
+        title='Log out'
+        onPress={() => firebase.doSignOut()}
+      />
+    </View>
+  )
+}
+
+export default compose(
+  withAuthentication
+)(HomeScreen)
