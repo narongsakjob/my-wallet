@@ -27,16 +27,6 @@ class Firebase {
 
   doSignInWithEmailAndPassword = (email, password) =>{
     this.auth.signInWithEmailAndPassword(email, password)
-    .then(authUser => {
-      this.database.child(authUser.uid)
-        .child('total')
-        .once('value', snapshot => {
-          if(!snapshot.exists()) {
-            this.database.child(authUser.uid)
-              .set({ total: 0 })
-          }
-        })
-    })
     .catch(error => {
       alert(error)
     })
@@ -53,16 +43,6 @@ class Firebase {
     const { idToken, accessToken } = result;
     const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
     this.auth.signInAndRetrieveDataWithCredential(credential)
-      .then(authUser => {
-        this.database.child(authUser.user.uid)
-        .child('total')
-        .once('value', snapshot => {
-          if(!snapshot.exists()) {
-            this.database.child(authUser.user.uid)
-              .set({ total: 0 })
-          }
-        })
-      })
   }
 
   doSignOut = () => this.auth.signOut()

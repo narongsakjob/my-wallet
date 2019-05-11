@@ -26,7 +26,12 @@ const withAuthentication = Component => {
           this.setState({ authUser: authUser })
           firebase.database.child(authUser.uid)
           .on('value', snapshot => {
-            this.getListItem(snapshot.val())
+            if (!snapshot.exists()) {
+              firebase.database.child(authUser.uid)
+                .set({ total: 0 })
+            } else {
+              this.getListItem(snapshot.val())
+            }
           })
 
           if (key !== 'NO-KEY') {
