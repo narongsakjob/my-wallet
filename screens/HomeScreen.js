@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Button, FlatList, StyleSheet } from 'react-native'
+import { View, TouchableWithoutFeedback, Alert, FlatList, StyleSheet } from 'react-native'
 import { Text } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/Entypo'
 
@@ -8,7 +8,7 @@ import Card from '../components/Card'
 
 const HomeScreen = ({ firebase, navigation, totalWallet, listWallet }) => {
   return (
-    <View>
+    <View style={{ height:'100%' }}>
       <View style={styles.banner}>
         <Text h4 style={styles.text}>
           <Icon
@@ -19,6 +19,29 @@ const HomeScreen = ({ firebase, navigation, totalWallet, listWallet }) => {
           />
           My wallet
         </Text>
+        <View style={{ position: 'absolute', top: 10, alignSelf: 'flex-end' }}>
+          <TouchableWithoutFeedback onPress={() => {
+            Alert.alert(
+              'Confirm',
+              'Do you want to logout ?',
+              [
+                {text: 'OK', onPress: () => firebase.doSignOut()},
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+              ],
+            );
+          }}>
+            <Icon
+                name='log-out'
+                size={26}
+                color='#fff'
+                style={{ paddingRight: 8 }}
+              />
+          </TouchableWithoutFeedback>
+        </View>
         <View style={styles.total}>
           <Icon
               name='credit'
@@ -28,18 +51,20 @@ const HomeScreen = ({ firebase, navigation, totalWallet, listWallet }) => {
           <Text style={styles.textTotal}>{totalWallet.toFixed(2)}</Text>
         </View>
       </View>
-      <Button 
-        title='Add wallet'
-        onPress={() => navigation.navigate('CreateWallet')}
-      />
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('CreateWallet')}>
+        <View style={styles.addContainer} >
+          <Icon
+            name='circle-with-plus'
+            size={18}
+            color='#CE8116'
+            style={{ marginRight: 20 }}
+          />
+          <Text style={{ color: '#494949'}}>Add Wallet</Text>
+        </View>
+      </TouchableWithoutFeedback>
       <FlatList
         data={listWallet}
         renderItem={({item}) => <Card navigation={navigation} item={item} />}
-      />
-      <Button
-        style={{ marginTop: '200px' }}
-        title='Log out'
-        onPress={() => firebase.doSignOut()}
       />
     </View>
   )
@@ -69,6 +94,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#CE8116',
     fontSize: 18
+  },
+  addContainer: {
+    backgroundColor: '#fff',
+    padding: 10,
+    display: 'flex',
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: '#CE8116'
   }
 })
 

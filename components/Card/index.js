@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, TouchableWithoutFeedback } from 'react-native'
+import { ListItem } from 'react-native-elements'
 
 const Card = ({ item, navigation }) => {
   const handleWallet = () => {
@@ -10,9 +11,12 @@ const Card = ({ item, navigation }) => {
 
   return (
     <TouchableWithoutFeedback onPress={handleWallet}>
-      <View>
-        <Text>{item.name} {item.total}.00</Text>
-      </View>
+      <ListItem
+        title={item.name}
+        subtitle={item.total.toFixed(2)}
+        leftIcon={{ name: 'save' }} 
+        rightIcon={{ name: 'chevron-right' }}
+      />
     </TouchableWithoutFeedback>
   )
 }
