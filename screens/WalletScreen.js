@@ -64,7 +64,6 @@ export default compose(
         const tasks = snapshot.val()
         let tempArr = []
         if (tasks !== null) {
-          console.log(tasks)
           Object.keys(tasks).forEach((task, index) => {
             tempArr.push({ day: task, tasks: [] })
             Object.keys(tasks[task]).forEach(val => {
