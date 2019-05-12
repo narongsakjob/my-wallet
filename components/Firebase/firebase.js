@@ -63,6 +63,21 @@ class Firebase {
       .set(name)
   }
 
+  deleteWallet = (key) => {
+    if (this.auth.currentUser === undefined) return;
+
+    const databaseRef = this.database.child(this.auth.currentUser.uid)
+    const walletRef = databaseRef.child('wallet').child(key)
+
+    databaseRef.once('value', snapshot => {
+      const totalRef = parseFloat(snapshot.val()['total'])
+      const totalWallet = parseFloat(snapshot.val()['wallet'][key]['total'])
+    
+      databaseRef.child('total').set(totalRef - totalWallet)
+      walletRef.set(null)
+    })
+  }
+
   createTask = ({ desc, type, key, value }) => {
     if (this.auth.currentUser === undefined) return;
     const monthNames = ["January", "February", "March", "April", "May", "June",

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native'
+import { SafeAreaView, View } from 'react-native'
 import { createAppContainer, createSwitchNavigator} from 'react-navigation'
 
 
@@ -17,7 +17,7 @@ const Home = ({ ...props }) => {
   const { authUser } = props
   return (
     authUser === false ?
-      <Text>Loading</Text> :
+      null :
       authUser === null ?
         <LoginScreen firebase={props.firebase} /> :
         <HomeScreen {...props} />

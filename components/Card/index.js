@@ -16,7 +16,7 @@ const Card = ({ item, navigation }) => {
     <TouchableWithoutFeedback onPress={handleWallet}>
       <ListItem
         title={item.name}
-        subtitle={item.total.toFixed(2)}
+        subtitle={item.total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         leftIcon={{ name: 'save' }} 
         rightIcon={{ name: 'chevron-right' }}
       />
@@ -29,7 +29,7 @@ const Card = ({ item, navigation }) => {
     <View style={styles.container}>
       <View>
         <Text>{item.desc}</Text>
-        <Text style={{ paddingRight: 5 }}>{item.price.toFixed(2)}</Text>
+        <Text style={{ paddingRight: 5 }}>{item.price.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
       </View>
       <View style={styles.containerLeft}>
         <TouchableWithoutFeedback onPress={() => {
@@ -46,7 +46,7 @@ const Card = ({ item, navigation }) => {
                 style: 'cancel',
               },
             ],
-          );
+          )
          }}>
           <Icon
             name='trash'

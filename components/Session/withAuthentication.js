@@ -10,7 +10,7 @@ const withAuthentication = Component => {
 
       this.state = {
         authUser: false,
-        listWallet: [],
+        listWallet: null,
         totalWallet: 0,
         walletName: '',
         limitWalletName: '0',
@@ -40,7 +40,9 @@ const withAuthentication = Component => {
             .child('wallet')
             .child(key)
             .on('value', snapshot => {
-              this.getItem(snapshot.val())
+              if (snapshot.exists()) {
+                this.getItem(snapshot.val())
+              }
             })
           }
         } else {

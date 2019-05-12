@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, FlatList, TouchableWithoutFeedback, StyleSheet } from 'react-native'
+import { View, FlatList, TouchableWithoutFeedback, StyleSheet, Alert } from 'react-native'
 import { compose, withState, lifecycle } from 'recompose'
 import { Text } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/Feather'
@@ -13,7 +13,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 const currentDate = new Date();
 
 const Wallet = ({
-  currentDate, currentMonth, currentYear, navigation, walletName, walletAmount, listTask, monthBalance
+  currentDate, currentMonth, currentYear, navigation, walletName, walletAmount, listTask, monthBalance, firebase
 }) => {
   const key = navigation.getParam('key', 'NO-KEY')
 
@@ -28,22 +28,49 @@ const Wallet = ({
           />
         </TouchableWithoutFeedback>
         <Text style={styles.title}>{walletName}</Text>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('CreateWallet', {
-          key: key
-        })}>
-          <Icon
-            name='edit-2'
-            size={26}
-            color='#fff'
-          />
-        </TouchableWithoutFeedback>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableWithoutFeedback onPress={() => navigation.navigate('CreateWallet', {
+              key: key
+            })}>
+              <Icon 
+                name='edit-2'
+                size={26}
+                color='#fff'
+                style={{ marginRight: 5 }}
+              />
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => {
+               Alert.alert(
+                'Confirm',
+                'Do you want to delete this wallet ?',
+                [
+                  {text: 'OK', onPress: () =>  {
+                    firebase.deleteWallet(key)
+                    navigation.navigate('Main')
+                  }
+                  },
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                ],
+              )
+            }}>
+              <Icon
+                name='trash'
+                size={26}
+                color='#fff'
+              />
+            </TouchableWithoutFeedback>
+          </View>
       </View>
       <View style={styles.balance}>
         <Text h5 style={styles.textBalance}>Wallet Balance</Text>
         <View style={styles.titleWrapper}>
-          <Text h4 style={styles.textBalance}>{walletAmount.toFixed(2)}</Text>
+          <Text h4 style={styles.textBalance}>{walletAmount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
         </View>
-        <Text h5 style={styles.textBalance}>Monthly balance : {monthBalance.toFixed(2)}</Text>
+        <Text h5 style={styles.textBalance}>Monthly balance : {monthBalance.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
       </View>
       <View style={styles.bannerCalendar}>
         <Icon
@@ -52,16 +79,6 @@ const Wallet = ({
           color='#000'
         />
         <Text>{`${currentMonth} ${currentYear}`}</Text>
-        <Icon
-          name='chevron-left'
-          size={26}
-          color='#000'
-        />
-        <Icon
-          name='chevron-right'
-          size={26}
-          color='#000'
-        />
       </View>
       <TouchableWithoutFeedback onPress={() => navigation.navigate('CreateTask', {
         key: key,
